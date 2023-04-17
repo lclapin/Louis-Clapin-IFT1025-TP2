@@ -1,0 +1,13 @@
+Louis Clapin
+Bonus
+
+Au niveau du multithreading, j'ai modifié la méthode run de la classe Server et j'ai ajouté une classe privée
+ à la fin de la classe Server avec l'information recueillie avec ce lien: 
+https://www.geeksforgeeks.org/multithreaded-servers-in-java/ que j'ai adapté la classe run avec mon code.  
+Avec ce code, on peut connecter plusieurs clients à la fois sur le serveur.
+Je me suis assurer que les threads soient synchronisés avec le bloc synchonized et avec le code de ce lien:
+https://stackoverflow.com/questions/50187531/java-synchronized-problems-of-multiple-threads.  De plus, le fait 
+qu'un client se déconnecte après chaque opération, les clients peuvent faire leurs opérations en alternance
+avec les autres sans problème.
+
+

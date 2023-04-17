@@ -5,23 +5,28 @@ import server.models.RegistrationForm;
 import java.io.*;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 
+/**
+ * La classe JavaClient definit les operations qu'un client peut faire avec des lignes de commandes.
+ */
 public class JavaClient {
 
+	/**
+	 * La methode main permet de connecter un client au serveur, de recevoir les informations des cours d'une session
+	 * donnee et d'envoyer les informations du client qui souhaite s'inscrire a un cour.
+	 *
+	 * @param args represente la chaine d'arguments passee a la methode.
+	 */
 	public static void main(String[] args) {
 
 		try {
-			Socket cS = new Socket("127.0.0.1", 1337);
+			Socket cSd = new Socket("127.0.0.1", 1337);
 
-			//OutputStreamWriter os = new OutputStreamWriter(cS.getOutputStream());
-
-			ObjectOutputStream os = new ObjectOutputStream(cS.getOutputStream());
-			//ObjectInputStream is = new ObjectInputStream(cS.getInputStream());
-
-			//BufferedWriter bw = new BufferedWriter(os);
+			ObjectOutputStream osd = new ObjectOutputStream(cSd.getOutputStream());
 
 			System.out.println("Veuillez saisir 'CHARGER' suivi du numéro de la session (1 = automne, 2 = hiver" +
 					" 3 = été) pour afficher les cours de la session choisie.");
@@ -31,32 +36,29 @@ public class JavaClient {
 
 			while (sc.hasNext()) {
 				String line = sc.nextLine();
-				//System.out.println("J'ai envoyé " + line);
+				Socket cS = new Socket("127.0.0.1", 1337);
+				ObjectOutputStream os = new ObjectOutputStream(cS.getOutputStream());
 				os.writeObject(line);
-				//os.reset();
-				//os.append(line+"\n");
 				os.flush();
 				if (line.equals("exit")) {
 					System.out.println("Au revoir.");
 					break;
 				}
 
-				if(line.equals("CHARGER 1") || line.equals("CHARGER 2") || line.equals("CHARGER 3")) {
+				if (line.equals("CHARGER 1") || line.equals("CHARGER 2") || line.equals("CHARGER 3")) {
 					Thread.sleep(200);
 					System.out.print("Voici les cours de la session d'");
-					if(line.equals("CHARGER 1")){
+					if (line.equals("CHARGER 1")) {
 						System.out.println("automne :");
 					}
-					if(line.equals("CHARGER 2")){
+					if (line.equals("CHARGER 2")) {
 						System.out.println("hiver :");
 					}
-					if(line.equals("CHARGER 3")){
+					if (line.equals("CHARGER 3")) {
 						System.out.println("été :");
 					}
 
-					//Thread.sleep(200);
 					FileInputStream fileIs = new FileInputStream("course.dat");
-
 					ObjectInputStream is = new ObjectInputStream(fileIs);
 
 					ArrayList<Course> cours = new ArrayList<>();
@@ -66,7 +68,7 @@ public class JavaClient {
 						System.out.println(cours.get(i).getCode() + " " + cours.get(i).getName());
 					}
 				}
-				if (line.equals("INSCRIRE")){
+				if (line.equals("INSCRIRE")) {
 					System.out.println("Veuillez saisir votre prénom :");
 					Scanner scPrenom = new Scanner(System.in);
 					String prenom = scPrenom.nextLine();
@@ -84,7 +86,6 @@ public class JavaClient {
 					if (scCode.hasNext()) {
 						String code = scCode.nextLine();
 						os.writeObject(code);
-						//os.reset();
 						os.flush();
 					}
 
@@ -92,47 +93,40 @@ public class JavaClient {
 					FileInputStream fileIs = new FileInputStream("course.dat");
 
 					ObjectInputStream is = new ObjectInputStream(fileIs);
-					//Course course = new Course();
 					Course course = (Course) is.readObject();
-					//System.out.println(course.toString());
 					RegistrationForm rf = new RegistrationForm(prenom, nom, email, matricule, course);
 
-
-					//os.reset();
-					//Thread.sleep(200);
-					//ObjectOutputStream osrf = new ObjectOutputStream(cS.getOutputStream());
 					os.writeObject(rf);
-					//os.reset();
 					os.flush();
-					//osrf.reset();
 					Thread.sleep(200);
 					FileInputStream fileIsR = new FileInputStream("validation.dat");
 
 					ObjectInputStream isR = new ObjectInputStream(fileIsR);
 					String reussite = isR.readObject().toString();
-					if(reussite.equals("reussite")){
+					if (reussite.equals("reussite")) {
 						System.out.println("Félicitations ! Inscription réussie pour " + rf.getPrenom() +
 								" au cour " + rf.getCourse().getCode() + ".");
 					}
-					if(reussite.equals("echec")){
-						System.out.println("Vos informations n'ont pas été enregistrées correctement.  Veuillez réesssayer.");
+					if (reussite.equals("echec")) {
+						System.err.println("Vos informations n'ont pas été enregistrées correctement.  Veuillez réesssayer.");
 					}
 				}
-			}
 				os.close();
-				sc.close();
 				cS.close();
+			}
+			sc.close();
 
-			} catch(ConnectException x){
-				System.out.println("Connexion impossible sur port 1337: pas de serveur.");
-			} catch(IOException e){
-				e.printStackTrace();
-			} catch(ClassNotFoundException e){
-				throw new RuntimeException(e);
-			} catch (InterruptedException e) {
+		} catch (UnknownHostException e) {
+			throw new RuntimeException(e);
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
-
 	}
-
 }
+

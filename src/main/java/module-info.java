@@ -1,8 +1,6 @@
-module server.clapin_louis {
-    requires javafx.controls;
-    requires javafx.fxml;
-
-
-    opens server.clapin_louis to javafx.fxml;
-    exports server.clapin_louis;
+module Clapin_Louis {
+	requires javafx.controls;
+	requires javafx.graphics;
+	
+	opens mvc to javafx.graphics, javafx.fxml;
 }

@@ -1,0 +1,4 @@
+Louis Clapin
+
+Voici le lien vers le projet dans GIthub:
+https://github.com/lclapin/Louis-Clapin-IFT1025-TP2
